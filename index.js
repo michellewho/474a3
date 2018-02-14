@@ -1,11 +1,29 @@
-var width = 750;
-var height = 450;
-var margin = { top: 20, right: 15, bottom: 30, left: 40 };
-var w = width - margin.left - margin.right;
-var h = height - margin.top - margin.bottom;
-
 var dataset;
 
+//set dimensions and margins
+var margin = { top: 20, right: 20, bottom: 30, left: 40 },
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// set ranges
+var y = d3.scaleBand()
+    .range([height, 0])
+    .padding(0.1);
+
+var x = d3.scaleLinear()
+    .range([0, width]);
+
+// append the svg object to the body of the page
+// append a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+
+// format the data
 d3.csv("summer.csv", function (data) {
     data.forEach(function (d) {
         d.Year = +d.Year;
@@ -21,102 +39,69 @@ d3.csv("summer.csv", function (data) {
 
     dataset = data;
 
-
-    console.log(data[0])
-    var gold=0, silver=0, bronze=0;
-    data.forEach(function(d){
+    // console.log(data[0])
+    var gold = 0, silver = 0, bronze = 0;
+    data.forEach(function (d) {
         //console.log(d.Medal);
-        if(d.Medal == "Gold"){
+        if (d.Medal == "Gold") {
             gold++;
-        } else if(d.Medal == "Silver"){
+        } else if (d.Medal == "Silver") {
             silver++;
         } else {
             bronze++;
         }
     })
-    console.log(gold + " " + silver + " " + bronze);
+    // console.log(gold + " " + silver + " " + bronze);
 
-     drawVis(dataset, gold, silver, bronze);
+    // get number of medals per country
+    var countries = new Map();
+    data.forEach(function (d) {
+        if (!countries.has(d.Country)) {
+            countries.set(d.Country, 1)
+        } else {
+            countries.set(d.Country, countries.get(d.Country) + 1)
+        }
+    });
+    // console.log(countries)
+    // console.log(countries.values())
+
+
+    // sets hierarchy for data - if we do sunburst
+    // var root = d3.stratify()
+    //     .id(function (d) {
+    //         return d.Sport;
+    //     })
+    //     .parentId(function (d) {
+    //         return d.Discipline;
+    //     })
+    //     (data);
+
+    drawVis(dataset, gold, silver, bronze, countries);
 });
 
-function drawVis(dataset) {
+function drawVis(dataset, gold, silver, bronze, countries) { //draw the circiles initially and on each interaction with a control
 
-}
+    // Scale the range of the data in the domains
+    // y axis: countries, x axis: num medals per country
+    x.domain([0, d3.max(2500)]) // ideally here you'd get the max value in countries.values() but I can't seem to get that
+    y.domain(dataset.map(function (d) { return d.Country; }));
 
-var col = d3.scaleOrdinal(d3.schemeCategory10);
+    // append the rectangles for the bar chart
+    svg.selectAll(".bar")
+        .data(dataset)
+        .enter().append("rect")
+        .attr("class", "bar")
+        //.attr("x", function(d) { return x(d.sales); })
+        // .attr("width", function (d) { return x(d.sales); }) // instead of d.sales, want the values in countries.values()
+        .attr("y", function (d) { return y(d.Country); })
+        .attr("height", y.bandwidth() + 2000);
 
-var svg = d3.select("body").append("svg")
-    .attr("width", w + margin.left + margin.right)
-    .attr("height", h + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // add the x Axis
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
 
-var chart = d3.select(".chart")
-    .attr("width", w + margin.left + margin.right)
-    .attr("height", h + margin.top + margin.bottom + 15)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var x = d3.scaleLinear()
-    .domain([0, 1000])
-    .range([0, w]);
-
-var y = d3.scaleLinear()
-    .domain([0, 1000])
-    .range([h, 0]);
-
-var xAxis = d3.axisBottom()
-    .ticks(4)
-    .scale(x);
-
-chart.append("g")
-    .attr("class", "axis")
-    .attr("transform", "translate(0," + h + ")")
-    .call(xAxis)
-    .append("text")
-    .attr("x", w)
-    .attr("y", -6)
-    .style("text-anchor", "end")
-    .text("Year");
-
-var yAxis = d3.axisLeft()
-    .scale(y);
-
-chart.append("g")
-    .attr("class", "axis")
-    .call(yAxis)
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 6)
-    .attr("dy", ".71em")
-    .style("text-anchor", "end")
-    .text("Medal Count");
-
-
-function drawVis(dataset, gold, silver, bronze) { //draw the circiles initially and on each interaction with a control
-
-    var circle = chart.selectAll("circle")
-        .data(dataset);
-
-    var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
-
-    circle
-        .attr("cx", function (d) { return x(d.Year); })
-        .attr("cy", function (d) { return y(d.Medal); })
-        .style("fill", function (d) { return col(d.Country); });
-
-    circle.exit().remove();
-
-    circle.enter().append("circle")
-        .attr("cx", function (d) { return x(d.Year); })
-        .attr("cy", function (d) { return y(d.Medal); })
-        .attr("r", 4)
-        .style("stroke", "black")
-        //.style("fill", function(d) { return colLightness(d.vol); })
-        .style("fill", function (d) { return col(d.Country); })
-        .style("opacity", 0.5);
-
-
+    // add the y Axis
+    svg.append("g")
+        .call(d3.axisLeft(y));
 }
