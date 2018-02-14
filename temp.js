@@ -42,7 +42,7 @@ d3.csv("summer.csv", function (data) {
     var countryMedalCounts = [{name: data[0].Country, gold: 0, silver: 0, bronze: 0}];
     
     data.forEach(function(c){
-        if (!countryMedalCounts.includes(c.Country)) {
+        if (!search(c.Country, countryMedalCounts)) {
             var newCountry = {name: c.Country, gold: 0, silver: 0, bronze: 0};
             countryMedalCounts.push(newCountry)
         };
@@ -85,6 +85,7 @@ d3.csv("summer.csv", function (data) {
     console.log("Total Medals: " + (gold+silver+bronze))
     console.log(countryMedalCounts[0]);
     console.log(countryMedalCounts.find(o => o.name === 'USA'))
+    console.log(countryMedalCounts.length)
 
     // // get number of medals per country
     // var countries = new Map();
@@ -116,26 +117,37 @@ d3.csv("summer.csv", function (data) {
     //     })
     //     (data);
 
-    //drawVis(dataset, countryMedalCounts);
+    drawVis(dataset, countryMedalCounts);
 });
+
+function search(nameKey, myArray){
+    for (var i=0; i < myArray.length; i++) {
+        if (myArray[i].name === nameKey) {
+            return true;
+        }
+    }
+    return false;
+}
 
 function drawVis(dataset, countryMedalCounts) { //draw the circiles initially and on each interaction with a control
 
     // Scale the range of the data in the domains
     // y axis: countries, x axis: num medals per country
     x.domain([0, d3.max(2500)]) // ideally here you'd get the max value in countries.values() but I can't seem to get that
-    y.domain(dataset.map(function (d) { return d.Country; }));
+    y.domain(countryMedalCounts.map(function (d) { return d.name; }));
 
-    var temp = d3.select("body").selectAll("div")
-        .data(dataset)
+    var temp = d3.select("svg").selectAll("rect")
+        .data(countryMedalCounts)
         .enter()
-        .append("div")
-        .attr("width", 10)
-        .style("height", function(d){ 
-            let obj = countryMedalCounts.find(o => o.name === d.Country);
-            return (obj.gold + obj.silver + obj.bronze)/10 + "px"
+        .append("rect")
+        .attr("height", 10)
+        .attr("width", function(d){ 
+            return (d.gold + d.silver + d.bronze)/5 + "px"
         })
+        .attr("y", function(d) { return y(d.name)})
+        //.attr("x", function(d) { return x()})
         .attr("class", "bar")
+        .text(function(d){return d.name});
 
     // // append the rectangles for the bar chart
     // var bars = svg.selectAll(".bar")
@@ -147,12 +159,12 @@ function drawVis(dataset, countryMedalCounts) { //draw the circiles initially an
     //     .attr("y", function (d) { return y(d.Country); })
     //     .attr("height", y.bandwidth() + 2000);
 
-    // // add the x Axis
-    // svg.append("g")
-    //     .attr("transform", "translate(0," + height + ")")
-    //     .call(d3.axisBottom(x));
+    // add the x Axis
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
 
-    // // add the y Axis
-    // svg.append("g")
-    //     .call(d3.axisLeft(y));
+    // add the y Axis
+    svg.append("g")
+        .call(d3.axisLeft(y));
 }
