@@ -3,11 +3,11 @@ var dataset;
 //set dimensions and margins
 var margin = { top: 20, right: 20, bottom: 30, left: 40 },
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 740 + 20000 - margin.top - margin.bottom;
 
 // set ranges
 var y = d3.scaleBand()
-    .range([height, 0])
+    .range([(height - 20000)* 5, 0])
     .padding(0.1);
 
 var x = d3.scaleLinear()
@@ -18,7 +18,7 @@ var x = d3.scaleLinear()
 // moves the 'group' element to the top left margin
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + margin.bottom) 
     .append("g")
     .attr("transform",
     "translate(" + margin.left + "," + margin.top + ")");
@@ -39,16 +39,16 @@ d3.csv("summer.csv", function (data) {
     })
 
     dataset = data;
-    var countryMedalCounts = [{name: data[0].Country, gold: 0, silver: 0, bronze: 0}];
-    
-    data.forEach(function(c){
+    var countryMedalCounts = [{ name: data[0].Country, gold: 0, silver: 0, bronze: 0 }];
+
+    data.forEach(function (c) {
         if (!search(c.Country, countryMedalCounts)) {
-            var newCountry = {name: c.Country, gold: 0, silver: 0, bronze: 0};
+            var newCountry = { name: c.Country, gold: 0, silver: 0, bronze: 0 };
             countryMedalCounts.push(newCountry)
         };
     })
 
-     console.log(countryMedalCounts[0])
+    console.log(countryMedalCounts[0])
     var gold = 0, silver = 0, bronze = 0;
 
     console.log("hi");
@@ -82,7 +82,7 @@ d3.csv("summer.csv", function (data) {
     })
 
     console.log(gold + " " + silver + " " + bronze);
-    console.log("Total Medals: " + (gold+silver+bronze))
+    console.log("Total Medals: " + (gold + silver + bronze))
     console.log(countryMedalCounts[0]);
     console.log(countryMedalCounts.find(o => o.name === 'USA'))
     console.log(countryMedalCounts.length)
@@ -120,8 +120,8 @@ d3.csv("summer.csv", function (data) {
     drawVis(dataset, countryMedalCounts);
 });
 
-function search(nameKey, myArray){
-    for (var i=0; i < myArray.length; i++) {
+function search(nameKey, myArray) {
+    for (var i = 0; i < myArray.length; i++) {
         if (myArray[i].name === nameKey) {
             return true;
         }
@@ -141,13 +141,13 @@ function drawVis(dataset, countryMedalCounts) { //draw the circiles initially an
         .enter()
         .append("rect")
         .attr("height", 10)
-        .attr("width", function(d){ 
-            return (d.gold + d.silver + d.bronze)/5 + "px"
+        .attr("width", function (d) {
+            return (d.gold + d.silver + d.bronze) / 5 + "px"
         })
-        .attr("y", function(d) { return y(d.name)})
+        .attr("y", function (d) { return y(d.name) })
         //.attr("x", function(d) { return x()})
         .attr("class", "bar")
-        .text(function(d){return d.name});
+        .text(function (d) { return d.name });
 
     // // append the rectangles for the bar chart
     // var bars = svg.selectAll(".bar")

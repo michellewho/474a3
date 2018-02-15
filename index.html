@@ -9,11 +9,13 @@
 
 <body>
     <h1>Olympic Dataset Visualization</h1>
-    <script src="temp.js"></script>
-    <div class="chart"></div>
-    <svg width="400" height = "110">
-        <rect class="bar"></rect>
-    </svg>
+    <form>
+        <label><input type="radio" name="dataset" id="dataset" value="All" onclick='change(this.value)' checked> Total</label>
+        <label><input type="radio" name="dataset" id="dataset" value="Gold" onclick='change(this.value)'> Gold</label>
+        <label><input type="radio" name="dataset" id="dataset" value="Silver" onclick='change(this.value)'> Silver</label>
+        <label><input type="radio" name="dataset" id="dataset" value="Bronze" onclick='change(this.value)'> Bronze</label>
+    </form>
+    <script src="fuckd3.js"></script>
 </body>
 
 </html>

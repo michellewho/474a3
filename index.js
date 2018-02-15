@@ -63,7 +63,8 @@ d3.csv("summer.csv", function (data) {
         }
     });
     // console.log(countries)
-    // console.log(countries.values())
+    console.log("hi")
+    console.log(countries.values())
 
 
     // sets hierarchy for data - if we do sunburst
@@ -76,25 +77,78 @@ d3.csv("summer.csv", function (data) {
     //     })
     //     (data);
 
-    drawVis(dataset, gold, silver, bronze, countries);
+    var countryMedalCounts = [{name: data[0].Country, gold: 0, silver: 0, bronze: 0}];
+    
+    data.forEach(function(c){
+        if (!search(c.Country, countryMedalCounts)) {
+            var newCountry = {name: c.Country, gold: 0, silver: 0, bronze: 0};
+            countryMedalCounts.push(newCountry)
+        };
+    })
+
+     console.log(countryMedalCounts[0])
+    var gold = 0, silver = 0, bronze = 0;
+
+    console.log("hi");
+    data.forEach(function (d) {
+        if (d.Medal == "Gold") {
+            gold++;
+            //countryMedalCounts[d.Country].gold += 1;
+            var obj = countryMedalCounts.find((o, i) => {
+                if (o.name === d.Country) {
+                    countryMedalCounts[i] = { name: o.name, gold: o.gold += 1, silver: o.silver, bronze: o.bronze };
+                    return true; // stop searching
+                }
+            });
+        } else if (d.Medal == "Silver") {
+            silver++;
+            var obj = countryMedalCounts.find((o, i) => {
+                if (o.name === d.Country) {
+                    countryMedalCounts[i] = { name: o.name, gold: o.gold, silver: o.silver += 1, bronze: o.bronze };
+                    return true; // stop searching
+                }
+            });
+        } else {
+            bronze++;
+            var obj = countryMedalCounts.find((o, i) => {
+                if (o.name === d.Country) {
+                    countryMedalCounts[i] = { name: o.name, gold: o.gold, silver: o.silver, bronze: o.bronze += 1 };
+                    return true; // stop searching
+                }
+            });
+        }
+    })
+
+    console.log(countryMedalCounts)
+
+    drawVis(dataset, gold, silver, bronze, countries, countryMedalCounts);
 });
 
-function drawVis(dataset, gold, silver, bronze, countries) { //draw the circiles initially and on each interaction with a control
+function search(nameKey, myArray){
+    for (var i=0; i < myArray.length; i++) {
+        if (myArray[i].name === nameKey) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function drawVis(dataset, gold, silver, bronze, countries, countryMedalCounts) { //draw the circiles initially and on each interaction with a control
 
     // Scale the range of the data in the domains
     // y axis: countries, x axis: num medals per country
     x.domain([0, d3.max(2500)]) // ideally here you'd get the max value in countries.values() but I can't seem to get that
-    y.domain(dataset.map(function (d) { return d.Country; }));
+    y.domain(countryMedalCounts.map(function(d) { return d.Country; }));
 
     // append the rectangles for the bar chart
-    svg.selectAll(".bar")
-        .data(dataset)
+    svg.selectAll(".rect")
+        .data(countryMedalCounts)
         .enter().append("rect")
         .attr("class", "bar")
-        //.attr("x", function(d) { return x(d.sales); })
+        .attr("x", function(c) { return x(c.name); })
         // .attr("width", function (d) { return x(d.sales); }) // instead of d.sales, want the values in countries.values()
-        .attr("y", function (d) { return y(d.Country); })
-        .attr("height", y.bandwidth() + 2000);
+        .attr("y", function (c) { return y(c.gold + c.silver + c.bronze); })
+        .attr("height", y.bandwidth());
 
     // add the x Axis
     svg.append("g")
