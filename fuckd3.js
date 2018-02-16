@@ -67,16 +67,24 @@ d3.csv("medalCount.csv", function (data) {
 function change(updatedState) {
     console.log(updatedState);
 
-    if (state === 'All') {
-       
-    } else if (state === 'Gold') {
-        
-    } else if (state === 'Silver') {
-
+    if (updatedState === 'All') {
+       d3.selectAll('rect').attr("width", function(d){
+        return d.All / 5 + "px"
+       })
+    } else if (updatedState === 'Gold') {
+        d3.selectAll('rect').attr("width", function(d){
+        return d.Gold / 2 + "px"
+       })
+    } else if (updatedState === 'Silver') {
+        d3.selectAll('rect').attr("width", function(d){
+        return d.Silver / 2 + "px"
+       })
     } else {
-        
+        d3.selectAll('rect').attr("width", function(d){
+        return d.Bronze / 2 + "px"
+       })
     }
-    drawVis(dataset, updatedState);
+    //drawVis(dataset, updatedState);
 }
 
 function update(data) {
@@ -126,7 +134,7 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
         .on("mouseout", function (d) {
             d3.select(this).style("fill", "black");
             div.transition()
-                .duration(500)
+                .duration(100)
                 .style("opacity", 0);
         });
 
@@ -149,9 +157,9 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
     //     })
 
     // add the x Axis
-    container.append("g")
-        .attr("transform", "translate(0," + (height * 5) + ")")
-        .call(d3.axisBottom(x));
+    // container.append("g")
+    //    .attr("transform", "translate(0," + (height * 5) + ")")
+    //    .call(d3.axisBottom(x));
 
     // add the y Axis
     container.append("g")
