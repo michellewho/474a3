@@ -84,12 +84,8 @@ function change(updatedState) {
         return d.Bronze / 2 + "px"
        })
     }
-    //drawVis(dataset, updatedState);
 }
 
-function update(data) {
-
-}
 
 function drawVis(dataset, state) { //draw the circiles initially and on each interaction with a control
 
@@ -140,22 +136,6 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
 
     bars.exit().remove()
 
-    // bars.attr("y", function (d) { return y(d.Country) })
-    //     .attr("width", function (d) {
-    //         if (state == "All") {
-    //             return d.All / 5 + "px"                
-    //         }
-    //         else if (state == "Gold") {
-    //             return d.Gold / 2.5 + "px"
-    //         }
-    //         else if (state == "Silver") {
-    //             return d.Silver / 2.5 + "px"
-    //         }
-    //         else {
-    //             return d.Bronze / 2.5 + "px"
-    //         }  
-    //     })
-
     // add the x Axis
     // container.append("g")
     //    .attr("transform", "translate(0," + (height * 5) + ")")
@@ -163,7 +143,9 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
 
     // add the y Axis
     container.append("g")
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y).ticks(function(d){
+            return d.Country;
+        }));
 
 
     // tooltip
