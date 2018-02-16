@@ -68,21 +68,21 @@ function change(updatedState) {
     console.log(updatedState);
 
     if (updatedState === 'All') {
-       d3.selectAll('rect').attr("width", function(d){
-        return d.All / 5 + "px"
-       })
+        d3.selectAll('rect').attr("width", function (d) {
+            return d.All / 5 + "px"
+        })
     } else if (updatedState === 'Gold') {
-        d3.selectAll('rect').attr("width", function(d){
-        return d.Gold / 2 + "px"
-       })
+        d3.selectAll('rect').attr("width", function (d) {
+            return d.Gold / 2 + "px"
+        })
     } else if (updatedState === 'Silver') {
-        d3.selectAll('rect').attr("width", function(d){
-        return d.Silver / 2 + "px"
-       })
+        d3.selectAll('rect').attr("width", function (d) {
+            return d.Silver / 2 + "px"
+        })
     } else {
-        d3.selectAll('rect').attr("width", function(d){
-        return d.Bronze / 2 + "px"
-       })
+        d3.selectAll('rect').attr("width", function (d) {
+            return d.Bronze / 2 + "px"
+        })
     }
 }
 
@@ -112,7 +112,7 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
         }
         )
         .attr("y", function (d) { return y(d.Country) })
-        //.attr("x", function(d) { return x()})
+        .attr("x", function (d) { return margin.left })
         .attr("class", "rect")
         .on("mouseover", function (d) {
             d3.select(this).style("fill", "steelblue");
@@ -143,16 +143,21 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
 
     // add the y Axis
     container.append("g")
-        .call(d3.axisLeft(y).ticks(function(d){
-            return d.Country;
-        }));
+        .attr('transform', 'translate(' + [35] + ')')
+        .call(d3.axisLeft(y).ticks(function (d) {
+        return d.Country;
+    }));
 
 
     // tooltip
     var div = d3.select("body").append("div")
         .attr("class", "tooltip")
+        .attr("x", 20)
         .style("opacity", 0);
+
 }
+
+
 
 
 // function updateVis(dataset, state) {
