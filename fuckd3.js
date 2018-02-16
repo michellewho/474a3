@@ -64,10 +64,23 @@ d3.csv("medalCount.csv", function (data) {
 
 });
 
-function change(updatedState){
+function change(updatedState) {
     console.log(updatedState);
 
+    if (state === 'All') {
+       
+    } else if (state === 'Gold') {
+        
+    } else if (state === 'Silver') {
+
+    } else {
+        
+    }
     drawVis(dataset, updatedState);
+}
+
+function update(data) {
+
 }
 
 function drawVis(dataset, state) { //draw the circiles initially and on each interaction with a control
@@ -91,20 +104,9 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
         .append("rect")
         .attr("height", 10)
         .attr("width", function (d) {
-            if (state === "All") {
-                return d.All / 5 + "px"                
-            }
-            else if (state === "Gold") {
-                return d.Gold / 2.5 + "px"
-            }
-            else if (state === "Silver") {
-                return d.Silver / 2.5 + "px"
-            }
-            else {
-                return d.Bronze / 2.5 + "px"
-            }
-            
-        })
+            return d.All / 5 + "px"
+        }
+        )
         .attr("y", function (d) { return y(d.Country) })
         //.attr("x", function(d) { return x()})
         .attr("class", "rect")
@@ -128,6 +130,23 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
                 .style("opacity", 0);
         });
 
+    bars.exit().remove()
+
+    // bars.attr("y", function (d) { return y(d.Country) })
+    //     .attr("width", function (d) {
+    //         if (state == "All") {
+    //             return d.All / 5 + "px"                
+    //         }
+    //         else if (state == "Gold") {
+    //             return d.Gold / 2.5 + "px"
+    //         }
+    //         else if (state == "Silver") {
+    //             return d.Silver / 2.5 + "px"
+    //         }
+    //         else {
+    //             return d.Bronze / 2.5 + "px"
+    //         }  
+    //     })
 
     // add the x Axis
     container.append("g")
@@ -143,6 +162,24 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
     var div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
-
-
 }
+
+
+// function updateVis(dataset, state) {
+
+    // if (state === "All") {
+    //     data = dataset.All
+    // } else if (state === "Gold") {
+    //     data = dataset.
+    // }
+
+//     var bar = container.selectAll("rect")
+//         .data(dataset, function (d, state) { 
+//             if (state === "All") {
+//                 return d.All
+//             } else if (state === "Gold") {
+//                 data = dataset.Gold
+//             } else if 
+
+//          });
+// }
