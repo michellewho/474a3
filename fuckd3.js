@@ -60,7 +60,7 @@ d3.csv("medalCount.csv", function (data) {
 
     dataset = data;
 
-    drawVis(dataset, "All");
+    drawVis(dataset);
 
 });
 
@@ -68,26 +68,55 @@ function change(updatedState) {
     console.log(updatedState);
 
     if (updatedState === 'All') {
+        var all_D = dataset.sort(function(x, y){
+           return [d3.descending(x.All, y.All)];
+        })
+        y.domain(all_D.map(function (d) { return d.Country; }));
+        d3.selectAll("rect").data(all_D);
         d3.selectAll('rect').attr("width", function (d) {
             return d.All / 5 + "px"
         })
+
+
     } else if (updatedState === 'Gold') {
+        var gold_D = dataset.sort(function(x, y){
+           return d3.descending(x.Gold, y.Gold);
+        })
+        y.domain(gold_D.map(function (d) { return d.Country; }));
+        d3.selectAll("rect").data(gold_D);
         d3.selectAll('rect').attr("width", function (d) {
             return d.Gold / 2 + "px"
         })
+
+
     } else if (updatedState === 'Silver') {
+        var silver_D = dataset.sort(function(x, y){
+           return d3.descending(x.Silver, y.Silver);
+        })
+        y.domain(silver_D.map(function (d) { return d.Country; }));
+        d3.selectAll("rect").data(silver_D);
         d3.selectAll('rect').attr("width", function (d) {
             return d.Silver / 2 + "px"
         })
+
+
     } else {
+        var bronze_D = dataset.sort(function(x, y){
+           return d3.descending(x.Bronze, y.Bronze);
+        })
+        y.domain(bronze_D.map(function (d) { return d.Country; }));
+        d3.selectAll("rect").data(bronze_D);
         d3.selectAll('rect').attr("width", function (d) {
             return d.Bronze / 2 + "px"
         })
     }
+        d3.select("g")
+        .attr('transform', 'translate(' + [35] + ')')
+        .call(d3.axisLeft(y));
 }
 
 
-function drawVis(dataset, state) { //draw the circiles initially and on each interaction with a control
+function drawVis(datasetVis) { //draw the circiles initially and on each interaction with a control
 
     var goldData = [];
     var silverData = [];
@@ -96,14 +125,14 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
     // Scale the range of the data in the domains
     // y axis: countries, x axis: num medals per country
     x.domain([0, d3.max(2500)]) // ideally here you'd get the max value in countries.values() but I can't seem to get that
-    y.domain(dataset.map(function (d) { return d.Country; }));
+    y.domain(datasetVis.map(function (d) { return d.Country; }));
 
     var container = d3.select("body").append("svg")
         .attr("width", 960)
         .attr("height", 1000)
 
     var bars = container.selectAll("rect")
-        .data(dataset)
+        .data(datasetVis)
         .enter()
         .append("rect")
         .attr("height", 10)
@@ -144,9 +173,7 @@ function drawVis(dataset, state) { //draw the circiles initially and on each int
     // add the y Axis
     container.append("g")
         .attr('transform', 'translate(' + [35] + ')')
-        .call(d3.axisLeft(y).ticks(function (d) {
-        return d.Country;
-    }));
+        .call(d3.axisLeft(y));
 
 
     // tooltip
